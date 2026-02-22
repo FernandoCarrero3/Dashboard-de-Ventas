@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📊 Dashboard de Ventas
 
-## Getting Started
+Dashboard de analíticas para e-commerce con visualización de datos en tiempo real. Desarrollado con **Next.js** y **Recharts**, permite monitorizar métricas clave del negocio, analizar tendencias de ventas y exportar datos directamente a Excel.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## ✨ Funcionalidades
+
+- **Métricas en tiempo real:** ingresos totales, pedidos, ticket medio, productos y clientes
+- **Gráfica de área** con evolución de pedidos y filtro por rango temporal (3M / 5M / 1A)
+- **Gráfica de barras horizontal** con ventas desglosadas por categoría
+- **Gráfica de donut** con distribución porcentual de ventas
+- **Barras de progreso** por categoría con porcentaje visual
+- **Tabla de productos** con buscador en tiempo real por nombre y categoría
+- **Exportación a CSV** compatible con Excel (separador ; y codificación UTF-8)
+- **Modo claro / oscuro** con preferencia guardada entre sesiones
+- **Diseño responsive** adaptado a móvil, tablet y escritorio
+
+---
+
+## 🛠️ Tecnologías utilizadas
+
+| Capa | Tecnología |
+|---|---|
+| Frontend | Next.js 16, React 19 |
+| Gráficas | Recharts 3 |
+| Tipografía | Space Mono, Syne (Google Fonts) |
+| Estilos | CSS-in-JS personalizado |
+| Datos | API route de Next.js con datos mock |
+| Despliegue | Vercel |
+
+---
+
+## 📁 Estructura del proyecto
+
+```
+dashboard-ventas/
+├── app/
+│   ├── page.js              # Dashboard principal con todas las visualizaciones
+│   ├── api/
+│   │   └── dashboard/
+│   │       └── route.js     # Endpoint GET: métricas, categorías, productos y pedidos
+│   └── globals.css
+├── next.config.mjs
+└── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 📈 Métricas disponibles
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Ingresos totales** con variación porcentual
+- **Total de pedidos** del período
+- **Ticket medio** por pedido
+- **Catálogo de productos** activos
+- **Base de clientes** registrados
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 Instalación local
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**1. Clona el repositorio**
+```bash
+git clone https://github.com/FernandoCarrero3/dashboard-ventas.git
+cd dashboard-ventas
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**2. Instala las dependencias**
+```bash
+npm install
+```
 
-## Deploy on Vercel
+**3. Arranca el servidor de desarrollo**
+```bash
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🔌 Extensibilidad
+
+El endpoint `/api/dashboard` está diseñado para ser fácilmente reemplazado por datos reales. Puede conectarse a:
+
+- **Google Sheets** vía API
+- **Shopify, WooCommerce** u otras plataformas e-commerce
+- **Bases de datos** SQL o MongoDB
+- Cualquier **API REST** externa
+
+---
+
+## 👤 Autor
+
+**Fernando Carrero Pérez**
+Estudiante de Ingeniería Informática – Universidad de Huelva
+[GitHub](https://github.com/FernandoCarrero3) · [LinkedIn](https://www.linkedin.com/in/fernando-carrero/)
