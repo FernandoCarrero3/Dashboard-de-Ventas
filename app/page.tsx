@@ -82,7 +82,7 @@ export default function Home() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontFamily: "'Space Mono', monospace",
+        fontFamily: "var(--font-mono)",
         color: d ? "#00e5cc" : "#0a0a0a",
         fontSize: "0.8rem",
         letterSpacing: "0.15em",
@@ -137,13 +137,11 @@ export default function Home() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap');
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
           background: ${bg};
-          font-family: 'Syne', sans-serif;
+          font-family: var(--font-display, sans-serif);
           color: ${text};
           transition: background 0.3s, color 0.3s;
           min-height: 100vh;
@@ -167,7 +165,7 @@ export default function Home() {
         }
 
         .sidebar-logo {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.6rem;
           color: ${accent};
           writing-mode: vertical-rl;
@@ -214,7 +212,7 @@ export default function Home() {
         }
 
         .topbar-title {
-          font-family: 'Syne', sans-serif;
+          font-family: var(--font-display);
           font-size: 0.85rem;
           font-weight: 800;
           letter-spacing: 0.15em;
@@ -223,7 +221,7 @@ export default function Home() {
         }
 
         .topbar-tag {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.6rem;
           color: ${accent};
           background: ${accentDim};
@@ -233,14 +231,14 @@ export default function Home() {
         }
 
         .topbar-time {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.72rem;
           color: ${d ? "#555" : "#666"};
           letter-spacing: 0.05em;
         }
 
         .theme-btn {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.6rem;
           color: ${textMuted};
           background: none;
@@ -261,7 +259,7 @@ export default function Home() {
         }
 
         .section-label {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.72rem;
           color: ${d ? "#888" : "#444"};
           letter-spacing: 0.2em;
@@ -314,7 +312,7 @@ export default function Home() {
         .metric-card:hover { background: ${accentDim}; }
 
         .metric-label {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.72rem;
           color: ${d ? "#666" : "#555"};
           letter-spacing: 0.12em;
@@ -322,7 +320,7 @@ export default function Home() {
         }
 
         .metric-value {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 1.9rem;
           font-weight: 700;
           color: ${d ? "#e8e4dc" : "#0a0a0a"};
@@ -331,7 +329,7 @@ export default function Home() {
         }
 
         .metric-delta {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.65rem;
           color: ${accent};
           letter-spacing: 0.05em;
@@ -351,7 +349,7 @@ export default function Home() {
         }
 
         .chart-title {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.72rem;
           color: ${d ? "#888" : "#444"};
           letter-spacing: 0.15em;
@@ -376,7 +374,7 @@ export default function Home() {
         .table-head {
           padding: 1rem 1.5rem;
           border-bottom: 1px solid ${border};
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.7rem;
           color: ${d ? "#666" : "#444"};
           letter-spacing: 0.15em;
@@ -395,7 +393,7 @@ export default function Home() {
         th {
           padding: 0.75rem 1.5rem;
           text-align: left;
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.68rem;
           color: ${d ? "#666" : "#444"};
           letter-spacing: 0.1em;
@@ -417,7 +415,7 @@ export default function Home() {
         tr:hover td { background: ${accentDim}; }
 
         .td-mono {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.78rem;
         }
 
@@ -425,7 +423,7 @@ export default function Home() {
           display: inline-flex;
           align-items: center;
           gap: 0.3rem;
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.7rem;
           color: ${accent};
           border: 1px solid ${d ? "rgba(0,229,204,0.2)" : "rgba(0,229,204,0.4)"};
@@ -437,11 +435,11 @@ export default function Home() {
           font-size: 0.8rem;
           color: ${d ? "#666" : "#555"};
           text-transform: capitalize;
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
         }
 
         .rank {
-          font-family: 'Space Mono', monospace;
+          font-family: var(--font-mono);
           font-size: 0.7rem;
           color: ${textMuted};
         }
@@ -478,7 +476,7 @@ export default function Home() {
           <button
             onClick={() => exportarCSV([metricas], "metricas-dashboard")}
             style={{
-              fontFamily: "'Space Mono', monospace",
+              fontFamily: "var(--font-mono)",
               fontSize: "0.6rem",
               padding: "0.35rem 0.75rem",
               border: `1px solid ${border}`,
@@ -529,7 +527,7 @@ export default function Home() {
                       key={r}
                       onClick={() => setRango(r)}
                       style={{
-                        fontFamily: "'Space Mono', monospace",
+                        fontFamily: "var(--font-mono)",
                         fontSize: "0.58rem",
                         padding: "0.2rem 0.5rem",
                         border: `1px solid ${rango === r ? accent : border}`,
@@ -554,10 +552,10 @@ export default function Home() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={border} />
-                  <XAxis dataKey="mes" tick={{ fill: textMuted, fontSize: 10, fontFamily: "Space Mono" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: textMuted, fontSize: 10, fontFamily: "Space Mono" }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="mes" tick={{ fill: textMuted, fontSize: 10, fontFamily: "var(--font-mono)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: textMuted, fontSize: 10, fontFamily: "var(--font-mono)" }} axisLine={false} tickLine={false} />
                   <Tooltip
-                    contentStyle={{ background: surface, border: `1px solid ${border}`, borderRadius: 0, fontSize: 11, fontFamily: "Space Mono" }}
+                    contentStyle={{ background: surface, border: `1px solid ${border}`, borderRadius: 0, fontSize: 11, fontFamily: "var(--font-mono)" }}
                     labelStyle={{ color: text }}
                     itemStyle={{ color: accent }}
                   />
@@ -574,10 +572,10 @@ export default function Home() {
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={categorias} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke={border} horizontal={false} />
-                  <XAxis type="number" tick={{ fill: textMuted, fontSize: 10, fontFamily: "Space Mono" }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="nombre" tick={{ fill: textMuted, fontSize: 9, fontFamily: "Space Mono" }} axisLine={false} tickLine={false} width={70} />
+                  <XAxis type="number" tick={{ fill: textMuted, fontSize: 10, fontFamily: "var(--font-mono)" }} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="nombre" tick={{ fill: textMuted, fontSize: 9, fontFamily: "var(--font-mono)" }} axisLine={false} tickLine={false} width={70} />
                   <Tooltip
-                    contentStyle={{ background: surface, border: `1px solid ${border}`, borderRadius: 0, fontSize: 11, fontFamily: "Space Mono" }}
+                    contentStyle={{ background: surface, border: `1px solid ${border}`, borderRadius: 0, fontSize: 11, fontFamily: "var(--font-mono)" }}
                     labelStyle={{ color: text }}
                     itemStyle={{ color: accent }}
                   />
@@ -632,7 +630,7 @@ export default function Home() {
                       border: `1px solid ${border}`,
                       borderRadius: 0,
                       fontSize: 11,
-                      fontFamily: "Space Mono",
+                      fontFamily: "var(--font-mono)",
                     }}
                     labelStyle={{ color: text }}
                     itemStyle={{ color: accent }}
@@ -642,7 +640,7 @@ export default function Home() {
                     iconType="circle"
                     iconSize={6}
                     formatter={(value) => (
-                      <span style={{ fontFamily: "Space Mono", fontSize: "0.62rem", color: textMuted, letterSpacing: "0.08em" }}>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.62rem", color: textMuted, letterSpacing: "0.08em" }}>
                         {value.toUpperCase()}
                       </span>
                     )}
@@ -667,10 +665,10 @@ export default function Home() {
                         justifyContent: "space-between",
                         marginBottom: "0.3rem",
                       }}>
-                        <span style={{ fontFamily: "Space Mono", fontSize: "0.65rem", color: textMuted, letterSpacing: "0.08em" }}>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: textMuted, letterSpacing: "0.08em" }}>
                           {cat.nombre.toUpperCase()}
                         </span>
-                        <span style={{ fontFamily: "Space Mono", fontSize: "0.65rem", color: accent }}>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: accent }}>
                           {pct}%
                         </span>
                       </div>
@@ -707,7 +705,7 @@ export default function Home() {
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
                   style={{
-                    fontFamily: "'Space Mono', monospace",
+                    fontFamily: "var(--font-mono)",
                     fontSize: "0.62rem",
                     background: "transparent",
                     border: `1px solid ${border}`,
@@ -724,7 +722,7 @@ export default function Home() {
                 <button
                   onClick={() => exportarCSV(productosFiltrados, "productos-dashboard")}
                   style={{
-                    fontFamily: "'Space Mono', monospace",
+                    fontFamily: "var(--font-mono)",
                     fontSize: "0.6rem",
                     padding: "0.3rem 0.75rem",
                     border: `1px solid ${accent}`,
