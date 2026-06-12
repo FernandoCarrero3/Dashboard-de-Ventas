@@ -6,45 +6,8 @@ import {
   ResponsiveContainer, Area, AreaChart,
   PieChart, Pie, Cell, Legend
 } from "recharts";
-
-interface Metrica {
-  ingresosTotales: number;
-  totalPedidos: number;
-  ticketMedio: number;
-  totalProductos: number;
-  totalClientes: number;
-}
-
-interface Categoria {
-  nombre: string;
-  valor: number;
-}
-
-interface Producto {
-  nombre: string;
-  categoria: string;
-  precio: number;
-  rating: number;
-  votos: number;
-}
-
-interface PedidoPorMes {
-  mes: string;
-  pedidos: number;
-}
-
-interface DashboardData {
-  metricas: Metrica;
-  categorias: Categoria[];
-  topProductos: Producto[];
-  pedidosPorMes: PedidoPorMes[];
-}
-
-interface MetricaItem {
-  label: string;
-  valor: string | number;
-  delta: string;
-}
+import type { DashboardData, MetricaItem, Producto, PedidoPorMes } from "@/app/types";
+import { MetricCard } from "@/app/components";
 
 export default function Home() {
   const [datos, setDatos] = useState<DashboardData | null>(null);
@@ -507,11 +470,7 @@ export default function Home() {
 
           <div className="metrics">
             {metricasList.map((m, i) => (
-              <div className="metric-card" key={i}>
-                <div className="metric-label">{m.label}</div>
-                <div className="metric-value">{m.valor}</div>
-                <div className="metric-delta">↑ {m.delta}</div>
-              </div>
+              <MetricCard key={i} label={m.label} valor={m.valor} delta={m.delta} />
             ))}
           </div>
 
