@@ -6,8 +6,9 @@ import {
   ResponsiveContainer, Area, AreaChart,
   PieChart, Pie, Cell, Legend
 } from "recharts";
-import type { DashboardData, MetricaItem, Producto, PedidoPorMes } from "@/app/types";
-import { MetricCard } from "@/app/components";
+import type { DashboardData, MetricaItem, PedidoPorMes } from "@/app/types";
+import { MetricCard, TopProductsTable } from "@/app/components";
+import { exportarCSV } from "@/app/lib";
 
 export default function Home() {
   const [datos, setDatos] = useState<DashboardData | null>(null);
@@ -15,7 +16,6 @@ export default function Home() {
   const [mounted, setMounted] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [rango, setRango] = useState<number>(7);
-  const [busqueda, setBusqueda] = useState<string>("");
 
   useEffect(() => {
     setMounted(true);
@@ -76,26 +76,6 @@ export default function Home() {
   ];
 
   const datosFiltrados: PedidoPorMes[] = pedidosPorMes.slice(-rango);
-
-  const productosFiltrados: Producto[] = topProductos.filter((p) =>
-    p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-    p.categoria.toLowerCase().includes(busqueda.toLowerCase())
-  );
-
-  const exportarCSV = <T extends object>(exportData: T[], nombreArchivo: string): void => {
-    const headers = Object.keys(exportData[0] as Record<string, unknown>).join(";");
-    const filas = exportData.map((row) =>
-      Object.values(row as Record<string, unknown>).map((v) => `"${v}"`).join(";")
-    ).join("\n");
-    const csv = `﻿${headers}\n${filas}`;
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${nombreArchivo}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <>
@@ -654,76 +634,7 @@ export default function Home() {
 
           <div className="section-label">TOP PRODUCTOS</div>
 
-          <div className="table-card">
-            <div className="table-head">
-              <span>TOP PRODUCTOS POR VALORACIÓN</span>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <input
-                  type="text"
-                  placeholder="BUSCAR..."
-                  value={busqueda}
-                  onChange={(e) => setBusqueda(e.target.value)}
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.62rem",
-                    background: "transparent",
-                    border: `1px solid ${border}`,
-                    color: text,
-                    padding: "0.3rem 0.75rem",
-                    outline: "none",
-                    letterSpacing: "0.1em",
-                    width: "140px",
-                    transition: "border-color 0.2s",
-                  }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = accent; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = border; }}
-                />
-                <button
-                  onClick={() => exportarCSV(productosFiltrados, "productos-dashboard")}
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.6rem",
-                    padding: "0.3rem 0.75rem",
-                    border: `1px solid ${accent}`,
-                    background: accentDim,
-                    color: accent,
-                    cursor: "pointer",
-                    letterSpacing: "0.1em",
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,229,204,0.15)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = accentDim; }}
-                >
-                  ↓ EXPORTAR
-                </button>
-                <span className="table-count">{productosFiltrados.length} registros</span>
-              </div>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Producto</th>
-                  <th>Categoría</th>
-                  <th>Precio</th>
-                  <th>Rating</th>
-                  <th>Votos</th>
-                </tr>
-              </thead>
-              <tbody>
-                {productosFiltrados.map((p, i) => (
-                  <tr key={i}>
-                    <td><span className="rank">0{i + 1}</span></td>
-                    <td>{p.nombre}</td>
-                    <td><span className="cat-label">{p.categoria}</span></td>
-                    <td><span className="td-mono">{p.precio}€</span></td>
-                    <td><span className="rating-pill">★ {p.rating}</span></td>
-                    <td><span className="td-mono">{p.votos}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <TopProductsTable productos={topProductos} darkMode={darkMode} />
         </div>
       </div>
     </>
