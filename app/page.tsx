@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import {
   BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Area, AreaChart,
+  ResponsiveContainer,
   PieChart, Pie, Cell, Legend
 } from "recharts";
-import type { DashboardData, MetricaItem, PedidoPorMes } from "@/app/types";
-import { MetricCard, TopProductsTable } from "@/app/components";
+import type { DashboardData, MetricaItem } from "@/app/types";
+import { MetricCard, TopProductsTable, SalesChart } from "@/app/components";
 import { exportarCSV } from "@/app/lib";
 
 export default function Home() {
@@ -15,8 +15,6 @@ export default function Home() {
   const [cargando, setCargando] = useState<boolean>(true);
   const [mounted, setMounted] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(false);
-  const [rango, setRango] = useState<number>(7);
-
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem("dash-theme");
@@ -74,8 +72,6 @@ export default function Home() {
     { label: "PRODUCTOS", valor: metricas.totalProductos, delta: "0.0%" },
     { label: "CLIENTES", valor: metricas.totalClientes.toLocaleString(), delta: "+21.3%" },
   ];
-
-  const datosFiltrados: PedidoPorMes[] = pedidosPorMes.slice(-rango);
 
   return (
     <>
@@ -457,51 +453,7 @@ export default function Home() {
           <div className="section-label">ANÁLISIS DE DATOS</div>
 
           <div className="charts">
-            <div className="chart-card">
-              <div className="chart-title">
-                EVOLUCIÓN DE PEDIDOS
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                  {[3, 5, 7].map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => setRango(r)}
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: "0.58rem",
-                        padding: "0.2rem 0.5rem",
-                        border: `1px solid ${rango === r ? accent : border}`,
-                        background: rango === r ? accentDim : "transparent",
-                        color: rango === r ? accent : textMuted,
-                        cursor: "pointer",
-                        letterSpacing: "0.08em",
-                        transition: "all 0.2s",
-                      }}
-                    >
-                      {r === 3 ? "3M" : r === 5 ? "5M" : "1A"}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <ResponsiveContainer width="100%" height={220}>
-                <AreaChart data={datosFiltrados}>
-                  <defs>
-                    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={accent} stopOpacity={0.15} />
-                      <stop offset="95%" stopColor={accent} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={border} />
-                  <XAxis dataKey="mes" tick={{ fill: textMuted, fontSize: 10, fontFamily: "var(--font-mono)" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: textMuted, fontSize: 10, fontFamily: "var(--font-mono)" }} axisLine={false} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{ background: surface, border: `1px solid ${border}`, borderRadius: 0, fontSize: 11, fontFamily: "var(--font-mono)" }}
-                    labelStyle={{ color: text }}
-                    itemStyle={{ color: accent }}
-                  />
-                  <Area type="monotone" dataKey="pedidos" stroke={accent} strokeWidth={2} fill="url(#areaGrad)" dot={{ fill: accent, r: 3, strokeWidth: 0 }} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            <SalesChart datos={pedidosPorMes} darkMode={darkMode} />
 
             <div className="chart-card">
               <div className="chart-title">
