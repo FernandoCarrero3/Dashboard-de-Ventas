@@ -1,0 +1,434 @@
+"use client";
+import type { DashboardData, MetricaItem } from "@/app/types";
+import { exportarCSV } from "@/app/lib";
+import MetricCard from "./MetricCard";
+import TopProductsTable from "./TopProductsTable";
+import SalesChart from "./SalesChart";
+import CategoryCharts from "./CategoryCharts";
+
+interface DashboardProps {
+  datos: DashboardData;
+  darkMode: boolean;
+  toggleTheme: () => void;
+}
+
+export default function Dashboard({ datos, darkMode, toggleTheme }: DashboardProps) {
+  const { metricas, categorias, topProductos, pedidosPorMes } = datos;
+
+  const d = darkMode;
+  const bg = d ? "#0a0a0a" : "#f7f5f0";
+  const surface = d ? "#141414" : "#ffffff";
+  const border = d ? "#222" : "#e8e4dc";
+  const text = d ? "#e8e4dc" : "#0a0a0a";
+  const textMuted = d ? "#555" : "#999";
+  const accent = "#00e5cc";
+  const accentDim = d ? "rgba(0,229,204,0.08)" : "rgba(0,229,204,0.06)";
+
+  const metricasList: MetricaItem[] = [
+    { label: "INGRESOS", valor: `${metricas.ingresosTotales.toLocaleString()}€`, delta: "+12.4%" },
+    { label: "PEDIDOS", valor: metricas.totalPedidos, delta: "+8.1%" },
+    { label: "TICKET_MED", valor: `${metricas.ticketMedio}€`, delta: "+3.7%" },
+    { label: "PRODUCTOS", valor: metricas.totalProductos, delta: "0.0%" },
+    { label: "CLIENTES", valor: metricas.totalClientes.toLocaleString(), delta: "+21.3%" },
+  ];
+
+  return (
+    <>
+      <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+          background: ${bg};
+          font-family: var(--font-display, sans-serif);
+          color: ${text};
+          transition: background 0.3s, color 0.3s;
+          min-height: 100vh;
+          font-size: 16px;
+        }
+
+        .sidebar {
+          position: fixed;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 56px;
+          background: ${surface};
+          border-right: 1px solid ${border};
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 1.5rem 0;
+          gap: 1.5rem;
+          z-index: 100;
+        }
+
+        .sidebar-logo {
+          font-family: var(--font-mono);
+          font-size: 0.6rem;
+          color: ${accent};
+          writing-mode: vertical-rl;
+          letter-spacing: 0.2em;
+          font-weight: 700;
+        }
+
+        .sidebar-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: ${accent};
+          margin-top: auto;
+          animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.2; }
+        }
+
+        .main {
+          margin-left: 56px;
+          padding: 0;
+          min-height: 100vh;
+        }
+
+        .topbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.25rem 2rem;
+          border-bottom: 1px solid ${border};
+          background: ${surface};
+          position: sticky;
+          top: 0;
+          z-index: 50;
+        }
+
+        .topbar-left {
+          display: flex;
+          align-items: center;
+          gap: 1.5rem;
+        }
+
+        .topbar-title {
+          font-family: var(--font-display);
+          font-size: 0.85rem;
+          font-weight: 800;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: ${text};
+        }
+
+        .topbar-tag {
+          font-family: var(--font-mono);
+          font-size: 0.6rem;
+          color: ${accent};
+          background: ${accentDim};
+          border: 1px solid ${d ? "rgba(0,229,204,0.2)" : "rgba(0,229,204,0.3)"};
+          padding: 0.2rem 0.6rem;
+          letter-spacing: 0.1em;
+        }
+
+        .topbar-time {
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: ${d ? "#555" : "#666"};
+          letter-spacing: 0.05em;
+        }
+
+        .theme-btn {
+          font-family: var(--font-mono);
+          font-size: 0.6rem;
+          color: ${textMuted};
+          background: none;
+          border: 1px solid ${border};
+          padding: 0.35rem 0.75rem;
+          cursor: pointer;
+          letter-spacing: 0.1em;
+          transition: all 0.2s;
+        }
+
+        .theme-btn:hover {
+          border-color: ${accent};
+          color: ${accent};
+        }
+
+        .content {
+          padding: 2rem;
+        }
+
+        .section-label {
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: ${d ? "#888" : "#444"};
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .section-label::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: ${border};
+        }
+
+        .metrics {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 0;
+          border: 1px solid ${border};
+          margin-bottom: 2rem;
+        }
+
+        .metric-card {
+          padding: 1.5rem;
+          border-right: 1px solid ${border};
+          position: relative;
+          overflow: hidden;
+          transition: background 0.2s;
+        }
+
+        .metric-card:last-child { border-right: none; }
+
+        .metric-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: ${accent};
+          transform: scaleX(0);
+          transition: transform 0.3s;
+          transform-origin: left;
+        }
+
+        .metric-card:hover::before { transform: scaleX(1); }
+        .metric-card:hover { background: ${accentDim}; }
+
+        .metric-label {
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: ${d ? "#666" : "#555"};
+          letter-spacing: 0.12em;
+          margin-bottom: 1rem;
+        }
+
+        .metric-value {
+          font-family: var(--font-mono);
+          font-size: 1.9rem;
+          font-weight: 700;
+          color: ${d ? "#e8e4dc" : "#0a0a0a"};
+          line-height: 1;
+          margin-bottom: 0.5rem;
+        }
+
+        .metric-delta {
+          font-family: var(--font-mono);
+          font-size: 0.65rem;
+          color: ${accent};
+          letter-spacing: 0.05em;
+        }
+
+        .charts {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+        }
+
+        .chart-card {
+          background: ${surface};
+          border: 1px solid ${border};
+          padding: 1.5rem;
+        }
+
+        .chart-title {
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: ${d ? "#888" : "#444"};
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          margin-bottom: 1.5rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .chart-title span {
+          color: ${accent};
+          font-size: 0.58rem;
+        }
+
+        .table-card {
+          background: ${surface};
+          border: 1px solid ${border};
+          overflow: hidden;
+        }
+
+        .table-head {
+          padding: 1rem 1.5rem;
+          border-bottom: 1px solid ${border};
+          font-family: var(--font-mono);
+          font-size: 0.7rem;
+          color: ${d ? "#666" : "#444"};
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .table-count {
+          color: ${accent};
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        th {
+          padding: 0.75rem 1.5rem;
+          text-align: left;
+          font-family: var(--font-mono);
+          font-size: 0.68rem;
+          color: ${d ? "#666" : "#444"};
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          border-bottom: 1px solid ${border};
+          font-weight: 400;
+        }
+
+        td {
+          padding: 0.9rem 1.5rem;
+          font-size: 0.92rem;
+          font-weight: ${d ? "400" : "500"};
+          color: ${d ? "#c8c4bc" : "#1a1209"};
+          border-bottom: 1px solid ${border};
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tr:hover td { background: ${accentDim}; }
+
+        .td-mono {
+          font-family: var(--font-mono);
+          font-size: 0.78rem;
+        }
+
+        .rating-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+          font-family: var(--font-mono);
+          font-size: 0.7rem;
+          color: ${accent};
+          border: 1px solid ${d ? "rgba(0,229,204,0.2)" : "rgba(0,229,204,0.4)"};
+          padding: 0.15rem 0.5rem;
+          background: ${accentDim};
+        }
+
+        .cat-label {
+          font-size: 0.8rem;
+          color: ${d ? "#666" : "#555"};
+          text-transform: capitalize;
+          font-family: var(--font-mono);
+        }
+
+        .rank {
+          font-family: var(--font-mono);
+          font-size: 0.7rem;
+          color: ${textMuted};
+        }
+
+        @media (max-width: 1000px) {
+          .metrics { grid-template-columns: repeat(3, 1fr); }
+          .metric-card:nth-child(3) { border-right: none; }
+          .metric-card:nth-child(4),
+          .metric-card:nth-child(5) { border-top: 1px solid ${border}; }
+        }
+
+        @media (max-width: 600px) {
+          .metrics { grid-template-columns: 1fr 1fr; }
+          .sidebar { display: none; }
+          .main { margin-left: 0; }
+          .content { padding: 1rem; }
+          .topbar { padding: 1rem; }
+        }
+      `}</style>
+
+      <div className="sidebar">
+        <div className="sidebar-logo">SALES</div>
+        <div className="sidebar-dot" />
+      </div>
+
+      <div className="main">
+        <div className="topbar">
+          <div className="topbar-left">
+            <div className="topbar-title">Analytics</div>
+            <div className="topbar-tag">LIVE</div>
+            <div className="topbar-time">
+              {new Date().toLocaleDateString("es-ES", {
+                weekday: "short", day: "numeric", month: "short", year: "numeric",
+              }).toUpperCase()}
+            </div>
+          </div>
+          <button
+            onClick={() => exportarCSV([metricas], "metricas-dashboard")}
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.6rem",
+              padding: "0.35rem 0.75rem",
+              border: `1px solid ${border}`,
+              background: "transparent",
+              color: textMuted,
+              cursor: "pointer",
+              letterSpacing: "0.1em",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = accent;
+              e.currentTarget.style.color = accent;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = border;
+              e.currentTarget.style.color = textMuted;
+            }}
+          >
+            ↓ EXPORTAR MÉTRICAS
+          </button>
+          <button className="theme-btn" onClick={toggleTheme}>
+            {d ? "[ LIGHT ]" : "[ DARK ]"}
+          </button>
+        </div>
+
+        <div className="content">
+          <div className="section-label">MÉTRICAS GENERALES</div>
+
+          <div className="metrics">
+            {metricasList.map((m, i) => (
+              <MetricCard key={i} label={m.label} valor={m.valor} delta={m.delta} />
+            ))}
+          </div>
+
+          <div className="section-label">ANÁLISIS DE DATOS</div>
+
+          <div className="charts">
+            <SalesChart datos={pedidosPorMes} darkMode={darkMode} />
+          </div>
+
+          <div className="section-label" style={{ marginTop: "2rem" }}>DISTRIBUCIÓN DE VENTAS</div>
+
+          <div style={{ marginBottom: "2rem" }}>
+            <CategoryCharts categorias={categorias} darkMode={darkMode} />
+          </div>
+
+          <div className="section-label">TOP PRODUCTOS</div>
+
+          <TopProductsTable productos={topProductos} darkMode={darkMode} />
+        </div>
+      </div>
+    </>
+  );
+}
