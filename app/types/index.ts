@@ -36,3 +36,18 @@ export interface MetricaItem {
   valor: string | number;
   delta: string;
 }
+
+export type Periodo = "3m" | "6m" | "12m";
+export type CategoriaKey =
+  | "todas"
+  | "electronica"
+  | "ropa"
+  | "hogar"
+  | "deportes"
+  | "belleza"
+  | "juguetes";
+
+export interface Filtros {
+  periodo: Periodo;
+  categoria: CategoriaKey;
+}

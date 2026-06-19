@@ -2,9 +2,11 @@
 import { useState, useEffect } from "react";
 import { Dashboard, LoadingScreen, ErrorScreen } from "@/app/components";
 import { useDashboardData } from "@/app/hooks";
+import type { Filtros } from "@/app/types";
 
 export default function Home() {
-  const { datos, cargando, error } = useDashboardData();
+  const [filtros, setFiltros] = useState<Filtros>({ periodo: "6m", categoria: "todas" });
+  const { datos, cargando, error } = useDashboardData(filtros);
   const [mounted, setMounted] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 

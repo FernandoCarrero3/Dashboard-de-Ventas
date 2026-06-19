@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { DashboardData } from "@/app/types";
+import type { DashboardData, Filtros } from "@/app/types";
 
 interface UseDashboardDataResult {
   datos: DashboardData | null;
@@ -7,13 +7,16 @@ interface UseDashboardDataResult {
   error: string | null;
 }
 
-export function useDashboardData(): UseDashboardDataResult {
+export function useDashboardData(filtros: Filtros): UseDashboardDataResult {
   const [datos, setDatos] = useState<DashboardData | null>(null);
   const [cargando, setCargando] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/dashboard")
+    setCargando(true);
+    setError(null);
+
+    fetch(`/api/dashboard?periodo=${filtros.periodo}&categoria=${filtros.categoria}`)
       .then((r): Promise<DashboardData> => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json() as Promise<DashboardData>;
@@ -26,7 +29,7 @@ export function useDashboardData(): UseDashboardDataResult {
         setError(err instanceof Error ? err.message : "Error desconocido");
         setCargando(false);
       });
-  }, []);
+  }, [filtros.periodo, filtros.categoria]);
 
   return { datos, cargando, error };
 }
