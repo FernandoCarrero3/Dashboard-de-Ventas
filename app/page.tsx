@@ -1,24 +1,18 @@
 "use client";
 import { useState, useEffect } from "react";
-import type { DashboardData, MetricaItem } from "@/app/types";
+import type { MetricaItem } from "@/app/types";
 import { MetricCard, TopProductsTable, SalesChart, CategoryCharts } from "@/app/components";
+import { useDashboardData } from "@/app/hooks";
 import { exportarCSV } from "@/app/lib";
 
 export default function Home() {
-  const [datos, setDatos] = useState<DashboardData | null>(null);
-  const [cargando, setCargando] = useState<boolean>(true);
+  const { datos, cargando, error } = useDashboardData();
   const [mounted, setMounted] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(false);
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem("dash-theme");
     if (saved) setDarkMode(saved === "dark");
-    fetch("/api/dashboard")
-      .then((r) => r.json())
-      .then((data: DashboardData) => {
-        setDatos(data);
-        setCargando(false);
-      });
   }, []);
 
   const toggleTheme = () => {
@@ -43,6 +37,24 @@ export default function Home() {
         letterSpacing: "0.15em",
       }}>
         CARGANDO_DATOS...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{
+        minHeight: "100vh",
+        background: d ? "#0a0a0a" : "#f7f5f0",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "var(--font-mono)",
+        color: "#ff4444",
+        fontSize: "0.8rem",
+        letterSpacing: "0.15em",
+      }}>
+        ERROR: {error}
       </div>
     );
   }
