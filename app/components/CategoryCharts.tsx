@@ -8,6 +8,7 @@ import type { Categoria } from "@/app/types";
 interface CategoryChartsProps {
   categorias: Categoria[];
   darkMode: boolean;
+  onCategoriaClick?: (nombre: string) => void;
 }
 
 const PIE_COLORS = [
@@ -19,7 +20,7 @@ const PIE_COLORS = [
   "rgba(0,229,204,0.1)",
 ];
 
-export default function CategoryCharts({ categorias, darkMode }: CategoryChartsProps) {
+export default function CategoryCharts({ categorias, darkMode, onCategoriaClick }: CategoryChartsProps) {
   const d = darkMode;
   const surface = d ? "#141414" : "#ffffff";
   const border = d ? "#222" : "#e8e4dc";
@@ -28,6 +29,12 @@ export default function CategoryCharts({ categorias, darkMode }: CategoryChartsP
   const accent = "#00e5cc";
 
   const total = categorias.reduce((a, c) => a + c.valor, 0);
+
+  const handleClick = (entry: unknown) => {
+    if (onCategoriaClick && typeof entry === "object" && entry !== null && "nombre" in entry) {
+      onCategoriaClick((entry as { nombre: string }).nombre);
+    }
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -59,7 +66,14 @@ export default function CategoryCharts({ categorias, darkMode }: CategoryChartsP
                 labelStyle={{ color: text }}
                 itemStyle={{ color: accent }}
               />
-              <Bar dataKey="valor" fill={accent} radius={0} opacity={0.7} />
+              <Bar
+                dataKey="valor"
+                fill={accent}
+                radius={0}
+                opacity={0.7}
+                onClick={handleClick}
+                cursor={onCategoriaClick ? "pointer" : "default"}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -80,6 +94,8 @@ export default function CategoryCharts({ categorias, darkMode }: CategoryChartsP
                 innerRadius={70}
                 outerRadius={100}
                 paddingAngle={3}
+                onClick={handleClick}
+                style={{ cursor: onCategoriaClick ? "pointer" : "default" }}
               >
                 {categorias.map((_, i) => (
                   <Cell key={i} fill={PIE_COLORS[i]} />
@@ -114,7 +130,11 @@ export default function CategoryCharts({ categorias, darkMode }: CategoryChartsP
           {categorias.map((cat, i) => {
             const pct = Math.round((cat.valor / total) * 100);
             return (
-              <div key={i}>
+              <div
+                key={i}
+                onClick={() => onCategoriaClick?.(cat.nombre)}
+                style={{ cursor: onCategoriaClick ? "pointer" : "default" }}
+              >
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.3rem" }}>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: textMuted, letterSpacing: "0.08em" }}>
                     {cat.nombre.toUpperCase()}

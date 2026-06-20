@@ -1,10 +1,28 @@
 "use client";
-import type { DashboardData, MetricaItem, Filtros, Periodo } from "@/app/types";
+import type { DashboardData, MetricaItem, Filtros, Periodo, CategoriaKey } from "@/app/types";
 import { exportarCSV } from "@/app/lib";
 import MetricCard from "./MetricCard";
 import TopProductsTable from "./TopProductsTable";
 import SalesChart from "./SalesChart";
 import CategoryCharts from "./CategoryCharts";
+
+const NOMBRE_A_CLAVE: Record<string, CategoriaKey> = {
+  "Electrónica": "electronica",
+  "Ropa": "ropa",
+  "Hogar": "hogar",
+  "Deportes": "deportes",
+  "Belleza": "belleza",
+  "Juguetes": "juguetes",
+};
+
+const LABEL_CATEGORIA: Record<string, string> = {
+  electronica: "ELECTRÓNICA",
+  ropa: "ROPA",
+  hogar: "HOGAR",
+  deportes: "DEPORTES",
+  belleza: "BELLEZA",
+  juguetes: "JUGUETES",
+};
 
 interface DashboardProps {
   datos: DashboardData;
@@ -26,6 +44,11 @@ export default function Dashboard({ datos, darkMode, toggleTheme, cargando, filt
   const textMuted = d ? "#555" : "#999";
   const accent = "#00e5cc";
   const accentDim = d ? "rgba(0,229,204,0.08)" : "rgba(0,229,204,0.06)";
+
+  const handleCategoriaClick = (nombre: string) => {
+    const clave = NOMBRE_A_CLAVE[nombre];
+    if (clave) setFiltros({ ...filtros, categoria: clave });
+  };
 
   const metricasList: MetricaItem[] = [
     { label: "INGRESOS", valor: `${metricas.ingresosTotales.toLocaleString()}€`, delta: "+12.4%" },
@@ -387,6 +410,26 @@ export default function Dashboard({ datos, darkMode, toggleTheme, cargando, filt
                 weekday: "short", day: "numeric", month: "short", year: "numeric",
               }).toUpperCase()}
             </div>
+            {filtros.categoria !== "todas" && (
+              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <span className="topbar-tag">{LABEL_CATEGORIA[filtros.categoria]}</span>
+                <button
+                  onClick={() => setFiltros({ ...filtros, categoria: "todas" })}
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.8rem",
+                    background: "none",
+                    border: "none",
+                    color: accent,
+                    cursor: "pointer",
+                    padding: "0 0.15rem",
+                    lineHeight: 1,
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <div style={{ display: "flex" }}>
@@ -461,7 +504,11 @@ export default function Dashboard({ datos, darkMode, toggleTheme, cargando, filt
           <div className="section-label" style={{ marginTop: "2rem" }}>DISTRIBUCIÓN DE VENTAS</div>
 
           <div style={{ marginBottom: "2rem" }}>
-            <CategoryCharts categorias={categorias} darkMode={darkMode} />
+            <CategoryCharts
+              categorias={categorias}
+              darkMode={darkMode}
+              onCategoriaClick={filtros.categoria === "todas" ? handleCategoriaClick : undefined}
+            />
           </div>
 
           <div className="section-label">TOP PRODUCTOS</div>
