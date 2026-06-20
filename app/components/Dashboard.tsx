@@ -1,5 +1,5 @@
 "use client";
-import type { DashboardData, MetricaItem } from "@/app/types";
+import type { DashboardData, MetricaItem, Filtros, Periodo } from "@/app/types";
 import { exportarCSV } from "@/app/lib";
 import MetricCard from "./MetricCard";
 import TopProductsTable from "./TopProductsTable";
@@ -10,9 +10,12 @@ interface DashboardProps {
   datos: DashboardData;
   darkMode: boolean;
   toggleTheme: () => void;
+  cargando: boolean;
+  filtros: Filtros;
+  setFiltros: (f: Filtros) => void;
 }
 
-export default function Dashboard({ datos, darkMode, toggleTheme }: DashboardProps) {
+export default function Dashboard({ datos, darkMode, toggleTheme, cargando, filtros, setFiltros }: DashboardProps) {
   const { metricas, categorias, topProductos, pedidosPorMes } = datos;
 
   const d = darkMode;
@@ -83,6 +86,11 @@ export default function Dashboard({ datos, darkMode, toggleTheme }: DashboardPro
         @keyframes blink {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.2; }
+        }
+
+        @keyframes scan {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(400%); }
         }
 
         .main {
@@ -358,6 +366,12 @@ export default function Dashboard({ datos, darkMode, toggleTheme }: DashboardPro
         }
       `}</style>
 
+      {cargando && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "2px", background: bg, overflow: "hidden", zIndex: 300 }}>
+          <div style={{ width: "30%", height: "100%", background: accent, animation: "scan 0.8s linear infinite" }} />
+        </div>
+      )}
+
       <div className="sidebar">
         <div className="sidebar-logo">SALES</div>
         <div className="sidebar-dot" />
@@ -374,33 +388,59 @@ export default function Dashboard({ datos, darkMode, toggleTheme }: DashboardPro
               }).toUpperCase()}
             </div>
           </div>
-          <button
-            onClick={() => exportarCSV([metricas], "metricas-dashboard")}
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.6rem",
-              padding: "0.35rem 0.75rem",
-              border: `1px solid ${border}`,
-              background: "transparent",
-              color: textMuted,
-              cursor: "pointer",
-              letterSpacing: "0.1em",
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = accent;
-              e.currentTarget.style.color = accent;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = border;
-              e.currentTarget.style.color = textMuted;
-            }}
-          >
-            ↓ EXPORTAR MÉTRICAS
-          </button>
-          <button className="theme-btn" onClick={toggleTheme}>
-            {d ? "[ LIGHT ]" : "[ DARK ]"}
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <div style={{ display: "flex" }}>
+              {(["3m", "6m", "12m"] as Periodo[]).map((p, i) => (
+                <button
+                  key={p}
+                  onClick={() => setFiltros({ ...filtros, periodo: p })}
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.6rem",
+                    padding: "0.35rem 0.6rem",
+                    border: `1px solid ${filtros.periodo === p ? accent : border}`,
+                    background: filtros.periodo === p ? accentDim : "transparent",
+                    color: filtros.periodo === p ? accent : textMuted,
+                    cursor: "pointer",
+                    letterSpacing: "0.1em",
+                    transition: "all 0.15s",
+                    marginLeft: i > 0 ? "-1px" : 0,
+                    position: "relative",
+                    zIndex: filtros.periodo === p ? 1 : 0,
+                  }}
+                >
+                  {p.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => exportarCSV([metricas], "metricas-dashboard")}
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.6rem",
+                padding: "0.35rem 0.75rem",
+                border: `1px solid ${border}`,
+                background: "transparent",
+                color: textMuted,
+                cursor: "pointer",
+                letterSpacing: "0.1em",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = accent;
+                e.currentTarget.style.color = accent;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = border;
+                e.currentTarget.style.color = textMuted;
+              }}
+            >
+              ↓ EXPORTAR MÉTRICAS
+            </button>
+            <button className="theme-btn" onClick={toggleTheme}>
+              {d ? "[ LIGHT ]" : "[ DARK ]"}
+            </button>
+          </div>
         </div>
 
         <div className="content">

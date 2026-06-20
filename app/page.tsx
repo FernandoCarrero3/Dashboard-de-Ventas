@@ -22,9 +22,18 @@ export default function Home() {
     localStorage.setItem("dash-theme", next ? "dark" : "light");
   };
 
-  if (!mounted || cargando) return <LoadingScreen darkMode={darkMode} />;
+  if (!mounted || (cargando && !datos)) return <LoadingScreen darkMode={darkMode} />;
   if (error) return <ErrorScreen darkMode={darkMode} message={error} />;
   if (!datos) return null;
 
-  return <Dashboard datos={datos} darkMode={darkMode} toggleTheme={toggleTheme} />;
+  return (
+    <Dashboard
+      datos={datos}
+      darkMode={darkMode}
+      toggleTheme={toggleTheme}
+      cargando={cargando}
+      filtros={filtros}
+      setFiltros={setFiltros}
+    />
+  );
 }
