@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Dashboard from "./Dashboard";
 import LoadingScreen from "./LoadingScreen";
 import ErrorScreen from "./ErrorScreen";
-import { useDashboardData } from "@/app/hooks";
+import { useDashboardData, useLiveSimulation } from "@/app/hooks";
 import type { Filtros, Periodo, CategoriaKey } from "@/app/types";
 
 const PERIODOS_VALIDOS: Periodo[] = ["3m", "6m", "12m"];
@@ -34,7 +34,9 @@ export default function DashboardClient() {
     router.replace(qs ? `?${qs}` : "/", { scroll: false });
   };
 
-  const { datos, cargando, error } = useDashboardData(filtros);
+  const { datos: datosBase, cargando, error } = useDashboardData(filtros);
+  const [isLive, setIsLive] = useState(false);
+  const { datos, feed } = useLiveSimulation(datosBase, isLive);
   const [mounted, setMounted] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -50,18 +52,21 @@ export default function DashboardClient() {
     localStorage.setItem("dash-theme", next ? "dark" : "light");
   };
 
-  if (!mounted || (cargando && !datos)) return <LoadingScreen darkMode={darkMode} />;
+  if (!mounted || (cargando && !datosBase)) return <LoadingScreen darkMode={darkMode} />;
   if (error) return <ErrorScreen darkMode={darkMode} message={error} />;
   if (!datos) return null;
 
   return (
     <Dashboard
-      datos={datos}
+      datos={datos!}
       darkMode={darkMode}
       toggleTheme={toggleTheme}
       cargando={cargando}
       filtros={filtros}
       setFiltros={setFiltros}
+      isLive={isLive}
+      toggleLive={() => setIsLive((v) => !v)}
+      feed={feed}
     />
   );
 }

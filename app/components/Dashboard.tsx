@@ -1,5 +1,5 @@
 "use client";
-import type { DashboardData, MetricaItem, Filtros, Periodo, CategoriaKey } from "@/app/types";
+import type { DashboardData, MetricaItem, Filtros, Periodo, CategoriaKey, FeedEntry } from "@/app/types";
 import { exportarCSV } from "@/app/lib";
 import MetricCard from "./MetricCard";
 import TopProductsTable from "./TopProductsTable";
@@ -31,9 +31,12 @@ interface DashboardProps {
   cargando: boolean;
   filtros: Filtros;
   setFiltros: (f: Filtros) => void;
+  isLive: boolean;
+  toggleLive: () => void;
+  feed: FeedEntry[];
 }
 
-export default function Dashboard({ datos, darkMode, toggleTheme, cargando, filtros, setFiltros }: DashboardProps) {
+export default function Dashboard({ datos, darkMode, toggleTheme, cargando, filtros, setFiltros, isLive, toggleLive, feed }: DashboardProps) {
   const { metricas, categorias, topProductos, pedidosPorMes } = datos;
 
   const d = darkMode;
@@ -50,12 +53,12 @@ export default function Dashboard({ datos, darkMode, toggleTheme, cargando, filt
     if (clave) setFiltros({ ...filtros, categoria: clave });
   };
 
-  const metricasList: MetricaItem[] = [
-    { label: "INGRESOS", valor: `${metricas.ingresosTotales.toLocaleString()}€`, delta: "+12.4%" },
-    { label: "PEDIDOS", valor: metricas.totalPedidos, delta: "+8.1%" },
-    { label: "TICKET_MED", valor: `${metricas.ticketMedio}€`, delta: "+3.7%" },
-    { label: "PRODUCTOS", valor: metricas.totalProductos, delta: "0.0%" },
-    { label: "CLIENTES", valor: metricas.totalClientes.toLocaleString(), delta: "+21.3%" },
+  const metricasList: (MetricaItem & { rawValue: number })[] = [
+    { label: "INGRESOS", valor: `${metricas.ingresosTotales.toLocaleString()}€`, delta: "+12.4%", rawValue: metricas.ingresosTotales },
+    { label: "PEDIDOS", valor: metricas.totalPedidos, delta: "+8.1%", rawValue: metricas.totalPedidos },
+    { label: "TICKET_MED", valor: `${metricas.ticketMedio}€`, delta: "+3.7%", rawValue: metricas.ticketMedio },
+    { label: "PRODUCTOS", valor: metricas.totalProductos, delta: "0.0%", rawValue: metricas.totalProductos },
+    { label: "CLIENTES", valor: metricas.totalClientes.toLocaleString(), delta: "+21.3%", rawValue: metricas.totalClientes },
   ];
 
   return (
@@ -404,7 +407,37 @@ export default function Dashboard({ datos, darkMode, toggleTheme, cargando, filt
         <div className="topbar">
           <div className="topbar-left">
             <div className="topbar-title">Analytics</div>
-            <div className="topbar-tag">LIVE</div>
+            <button
+              onClick={toggleLive}
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.6rem",
+                color: isLive ? accent : textMuted,
+                background: isLive ? accentDim : "transparent",
+                border: `1px solid ${isLive ? accent : border}`,
+                padding: "0.2rem 0.55rem",
+                letterSpacing: "0.1em",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.35rem",
+              }}
+            >
+              {isLive && (
+                <span
+                  style={{
+                    width: "5px",
+                    height: "5px",
+                    borderRadius: "50%",
+                    background: accent,
+                    animation: "blink 1.5s infinite",
+                    display: "inline-block",
+                    flexShrink: 0,
+                  }}
+                />
+              )}
+              LIVE
+            </button>
             <div className="topbar-time">
               {new Date().toLocaleDateString("es-ES", {
                 weekday: "short", day: "numeric", month: "short", year: "numeric",
@@ -491,7 +524,7 @@ export default function Dashboard({ datos, darkMode, toggleTheme, cargando, filt
 
           <div className="metrics">
             {metricasList.map((m, i) => (
-              <MetricCard key={i} label={m.label} valor={m.valor} delta={m.delta} />
+              <MetricCard key={i} label={m.label} valor={m.valor} delta={m.delta} rawValue={m.rawValue} />
             ))}
           </div>
 

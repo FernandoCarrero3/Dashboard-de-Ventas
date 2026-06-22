@@ -51,3 +51,12 @@ export interface Filtros {
   periodo: Periodo;
   categoria: CategoriaKey;
 }
+
+export type Escenario = "normal" | "black_friday" | "verano" | "crisis";
+
+export interface FeedEntry {
+  id: number;
+  texto: string;
+  tipo: "up" | "down";
+  ts: number;
+}
