@@ -1,39 +1,10 @@
-"use client";
-import { useState, useEffect } from "react";
-import { Dashboard, LoadingScreen, ErrorScreen } from "@/app/components";
-import { useDashboardData } from "@/app/hooks";
-import type { Filtros } from "@/app/types";
+import { Suspense } from "react";
+import DashboardClient from "@/app/components/DashboardClient";
 
-export default function Home() {
-  const [filtros, setFiltros] = useState<Filtros>({ periodo: "6m", categoria: "todas" });
-  const { datos, cargando, error } = useDashboardData(filtros);
-  const [mounted, setMounted] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem("dash-theme");
-    if (saved) setDarkMode(saved === "dark");
-  }, []);
-
-  const toggleTheme = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    localStorage.setItem("dash-theme", next ? "dark" : "light");
-  };
-
-  if (!mounted || (cargando && !datos)) return <LoadingScreen darkMode={darkMode} />;
-  if (error) return <ErrorScreen darkMode={darkMode} message={error} />;
-  if (!datos) return null;
-
+export default function Page() {
   return (
-    <Dashboard
-      datos={datos}
-      darkMode={darkMode}
-      toggleTheme={toggleTheme}
-      cargando={cargando}
-      filtros={filtros}
-      setFiltros={setFiltros}
-    />
+    <Suspense fallback={null}>
+      <DashboardClient />
+    </Suspense>
   );
 }
